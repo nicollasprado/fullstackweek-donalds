@@ -12,6 +12,9 @@ export interface ICartContext {
     products: CartProduct[];
     toggleCart: () => void;
     addProduct: (product: CartProduct) => void;
+    increaseProductQuantity: (productId: string) => void;
+    decreaseProductQuantity: (productId: string) => void;
+    removeProduct: (productId: string) => void;
 }
 
 export const CartContext = createContext<ICartContext>({
@@ -19,6 +22,9 @@ export const CartContext = createContext<ICartContext>({
     products: [],
     toggleCart: () => {},
     addProduct: () => {},
+    increaseProductQuantity: () => {},
+    decreaseProductQuantity: () => {},
+    removeProduct: () => {},
 })
 
 
@@ -41,7 +47,34 @@ export const CartProvider = ({ children }: {children: ReactNode}) => {
         }else{
             setProducts((prev) => [...prev, product]);
         }
+    }
 
+    const increaseProductQuantity = (productId: string) => {
+        setProducts(prevProducts => {
+            return prevProducts.map(prevProduct => {
+                if(prevProduct.id === productId){
+                    return {...prevProduct, quantity: prevProduct.quantity + 1}
+                }
+                return prevProduct
+            })
+        })
+    }
+
+    const decreaseProductQuantity = (productId: string) => {
+        setProducts(prevProducts => {
+            return prevProducts.map(prevProduct => {
+                if(prevProduct.id === productId && prevProduct.quantity > 1){
+                    return {...prevProduct, quantity: prevProduct.quantity - 1}
+                }
+                return prevProduct
+            })
+        })
+    }
+
+    const removeProduct = (productId: string) => {
+        const newProductsList = products.filter(product => product.id !== productId);
+
+        setProducts(newProductsList);
     }
 
     return (
@@ -51,6 +84,9 @@ export const CartProvider = ({ children }: {children: ReactNode}) => {
             products,
             toggleCart,
             addProduct,
+            increaseProductQuantity,
+            decreaseProductQuantity,
+            removeProduct,
           }}
         >
             {children}

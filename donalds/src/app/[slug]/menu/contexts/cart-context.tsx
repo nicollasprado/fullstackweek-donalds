@@ -21,6 +21,7 @@ export const CartContext = createContext<ICartContext>({
     addProduct: () => {},
 })
 
+
 export const CartProvider = ({ children }: {children: ReactNode}) => {
     const [products, setProducts] = useState<CartProduct[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -30,7 +31,17 @@ export const CartProvider = ({ children }: {children: ReactNode}) => {
     }
 
     const addProduct = (product: CartProduct) => {
-        setProducts((prev) => [...prev, product]);
+        const findProduct = products.find(inListProduct => product.id === inListProduct.id);
+
+        if(findProduct){
+            const otherProducts: CartProduct[] = products.filter(cartProduct => cartProduct.id !== product.id);
+
+            product.quantity += findProduct.quantity;
+            setProducts([...otherProducts, product])
+        }else{
+            setProducts((prev) => [...prev, product]);
+        }
+
     }
 
     return (

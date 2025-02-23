@@ -3,11 +3,14 @@
 import { Prisma } from "@prisma/client";
 import { ClockIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { formatCurrency } from "@/util/format-currency";
 
+import { CartContext } from "../contexts/cart-context";
+import CartSheet from "./cart-sheet";
 import ProductsList from "./products";
 
 interface RestaurantCategoriesProps {
@@ -33,6 +36,8 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
   const getCategoryVariantButton = (category: MenuCategoryWithProducts) => {
     return selectedCategory.id === category.id ? "default" : "secondary";
   }
+
+  const { total, totalQuantity, toggleCart, products } = useContext(CartContext);
 
   return (
     <div className="rounded-t-3xl relative z-50 mt-[-1.5rem] bg-white">
@@ -70,6 +75,24 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
 
           <h3 className="px-3 pt-8 font-semibold">{selectedCategory.name}</h3>
       <ProductsList products={selectedCategory.products} />
+
+      {products.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 flex w-full items-center justify-between bg-white px-5 py-3 border-t">
+          {/* ESQUERDA */}
+          <div>
+            <p className="text-sx text-muted-foreground">Total dos pedidos</p>
+            <p className="text-sm font-semibold">
+              {formatCurrency(total)}
+              <span className="text-xs font-normal text-muted-foreground"> / {totalQuantity} {totalQuantity > 1 ? "itens" : "item"}</span>
+            </p>
+          </div>
+
+          {/* DIREITA */}
+          <Button onClick={toggleCart}>Ver sacola</Button>
+
+          <CartSheet />
+        </div>
+      )}
     </div>
   );
 };

@@ -30,8 +30,8 @@ const RestaurantMenuPage = async ({
     include: {
       menuCategories: {
         include: {
-            products: true,
-        }
+          products: true,
+        },
       },
     },
   });
